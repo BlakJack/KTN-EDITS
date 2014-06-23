@@ -11,6 +11,8 @@
  * @license MIT license
  */
 
+var fs = require('fs');
+
 module.exports = (function () {
 	var moddedTools = {};
 
@@ -41,14 +43,14 @@ module.exports = (function () {
 			mod: mod
 		};
 		if (mod === 'base') {
-			dataTypes.forEach(function(dataType) {
+			dataTypes.forEach(function (dataType) {
 				try {
 					var path = './data/' + dataFiles[dataType];
 					if (fs.existsSync(path)) {
 						data[dataType] = require(path)['Battle' + dataType];
 					}
 				} catch (e) {
-					console.log('CRASH LOADING DATA: '+e.stack);
+					console.log('CRASH LOADING DATA: ' + e.stack);
 				}
 				if (!data[dataType]) data[dataType] = {};
 			}, this);
@@ -56,7 +58,7 @@ module.exports = (function () {
 				var path = './config/formats.js';
 				if (fs.existsSync(path)) {
 					var configFormats = require(path).Formats;
-					for (var i=0; i<configFormats.length; i++) {
+					for (var i = 0; i < configFormats.length; i++) {
 						var format = configFormats[i];
 						var id = toId(format.name);
 						format.effectType = 'Format';
@@ -66,18 +68,18 @@ module.exports = (function () {
 					}
 				}
 			} catch (e) {
-				console.log('CRASH LOADING FORMATS: '+e.stack);
+				console.log('CRASH LOADING FORMATS: ' + e.stack);
 			}
 		} else {
 			var parentData = moddedTools[parentMod].data;
-			dataTypes.forEach(function(dataType) {
+			dataTypes.forEach(function (dataType) {
 				try {
 					var path = './mods/' + mod + '/' + dataFiles[dataType];
 					if (fs.existsSync(path)) {
 						data[dataType] = require(path)['Battle' + dataType];
 					}
 				} catch (e) {
-					console.log('CRASH LOADING MOD DATA: '+e.stack);
+					console.log('CRASH LOADING MOD DATA: ' + e.stack);
 				}
 				if (!data[dataType]) data[dataType] = {};
 				for (var i in parentData[dataType]) {
@@ -101,16 +103,43 @@ module.exports = (function () {
 				}
 			});
 		}
+		data['Natures'] = {
+			adamant: {name:"Adamant", plus:'atk', minus:'spa'},
+			bashful: {name:"Bashful"},
+			bold: {name:"Bold", plus:'def', minus:'atk'},
+			brave: {name:"Brave", plus:'atk', minus:'spe'},
+			calm: {name:"Calm", plus:'spd', minus:'atk'},
+			careful: {name:"Careful", plus:'spd', minus:'spa'},
+			docile: {name:"Docile"},
+			gentle: {name:"Gentle", plus:'spd', minus:'def'},
+			hardy: {name:"Hardy"},
+			hasty: {name:"Hasty", plus:'spe', minus:'def'},
+			impish: {name:"Impish", plus:'def', minus:'spa'},
+			jolly: {name:"Jolly", plus:'spe', minus:'spa'},
+			lax: {name:"Lax", plus:'def', minus:'spd'},
+			lonely: {name:"Lonely", plus:'atk', minus:'def'},
+			mild: {name:"Mild", plus:'spa', minus:'def'},
+			modest: {name:"Modest", plus:'spa', minus:'atk'},
+			naive: {name:"Naive", plus:'spe', minus:'spd'},
+			naughty: {name:"Naughty", plus:'atk', minus:'spd'},
+			quiet: {name:"Quiet", plus:'spa', minus:'spe'},
+			quirky: {name:"Quirky"},
+			rash: {name:"Rash", plus:'spa', minus:'spd'},
+			relaxed: {name:"Relaxed", plus:'def', minus:'spe'},
+			sassy: {name:"Sassy", plus:'spd', minus:'spe'},
+			serious: {name:"Serious"},
+			timid: {name:"Timid", plus:'spe', minus:'atk'}
+		};
 	}
 
-	Tools.prototype.mod = function(mod) {
+	Tools.prototype.mod = function (mod) {
 		if (!moddedTools[mod]) {
 			mod = this.getFormat(mod).mod;
 		}
 		if (!mod) mod = 'base';
 		return moddedTools[mod];
 	};
-	Tools.prototype.modData = function(dataType, id) {
+	Tools.prototype.modData = function (dataType, id) {
 		if (this.isBase) return this.data[dataType][id];
 		var parentMod = this.data.Scripts.inherit;
 		if (!parentMod) parentMod = 'base';
@@ -118,26 +147,26 @@ module.exports = (function () {
 		return this.data[dataType][id] = Object.clone(this.data[dataType][id], true);
 	};
 
-	Tools.prototype.effectToString = function() {
+	Tools.prototype.effectToString = function () {
 		return this.name;
 	};
-	Tools.prototype.getImmunity = function(type, target) {
+	Tools.prototype.getImmunity = function (type, target) {
 		var types = target.getTypes && target.getTypes() || target.types;
-		for (var i=0; i<types.length; i++) {
+		for (var i = 0; i < types.length; i++) {
 			if (this.data.TypeChart[types[i]] && this.data.TypeChart[types[i]].damageTaken && this.data.TypeChart[types[i]].damageTaken[type] === 3) {
 				return false;
 			}
 		}
 		return true;
 	};
-	Tools.prototype.getEffectiveness = function(source, target, pokemon) {
+	Tools.prototype.getEffectiveness = function (source, target, pokemon) {
 		if (source.getEffectiveness) {
 			return source.getEffectiveness.call(this, source, target, pokemon);
 		}
 		var type = source.type || source;
 		var totalTypeMod = 0;
 		var targetTypes = target.getTypes && target.getTypes() || target.types;
-		for (var i=0; i<targetTypes.length; i++) {
+		for (var i = 0; i < targetTypes.length; i++) {
 			if (!this.data.TypeChart[targetTypes[i]]) continue;
 			var typeMod = this.data.TypeChart[targetTypes[i]].damageTaken[type];
 			if (typeMod === 1) { // super-effective
@@ -151,9 +180,9 @@ module.exports = (function () {
 		}
 		return totalTypeMod;
 	};
-	Tools.prototype.getTemplate = function(template) {
+	Tools.prototype.getTemplate = function (template) {
 		if (!template || typeof template === 'string') {
-			var name = (template||'').trim();
+			var name = (template || '').trim();
 			var id = toId(name);
 			if (this.data.Aliases[id]) {
 				name = this.data.Aliases[id];
@@ -180,19 +209,19 @@ module.exports = (function () {
 			if (!template.baseSpecies) template.baseSpecies = name;
 			if (!template.forme) template.forme = '';
 			if (!template.formeLetter) template.formeLetter = '';
-			if (!template.spriteid) template.spriteid = toId(template.baseSpecies)+(template.baseSpecies!==name?'-'+toId(template.forme):'');
+			if (!template.spriteid) template.spriteid = toId(template.baseSpecies) + (template.baseSpecies !== name ? '-' + toId(template.forme) : '');
 			if (!template.prevo) template.prevo = '';
 			if (!template.evos) template.evos = [];
 			if (!template.nfe) template.nfe = !!template.evos.length;
 			if (!template.gender) template.gender = '';
-			if (!template.genderRatio && template.gender === 'M') template.genderRatio = {M:1,F:0};
-			if (!template.genderRatio && template.gender === 'F') template.genderRatio = {M:0,F:1};
-			if (!template.genderRatio && template.gender === 'N') template.genderRatio = {M:0,F:0};
-			if (!template.genderRatio) template.genderRatio = {M:0.5,F:0.5};
+			if (!template.genderRatio && template.gender === 'M') template.genderRatio = {M:1, F:0};
+			if (!template.genderRatio && template.gender === 'F') template.genderRatio = {M:0, F:1};
+			if (!template.genderRatio && template.gender === 'N') template.genderRatio = {M:0, F:0};
+			if (!template.genderRatio) template.genderRatio = {M:0.5, F:0.5};
 			if (!template.tier && template.baseSpecies !== template.species) template.tier = this.data.FormatsData[toId(template.baseSpecies)].tier;
 			if (!template.tier) template.tier = 'Illegal';
 			if (!template.gen) {
-				if (template.forme && template.forme in {'Mega':1,'Mega-X':1,'Mega-Y':1}) {
+				if (template.forme && template.forme in {'Mega':1, 'Mega-X':1, 'Mega-Y':1}) {
 					template.gen = 6;
 					template.isMega = true;
 				} else if (template.num >= 650) template.gen = 6;
@@ -206,16 +235,16 @@ module.exports = (function () {
 		}
 		return template;
 	};
-	Tools.prototype.getMove = function(move) {
+	Tools.prototype.getMove = function (move) {
 		if (!move || typeof move === 'string') {
-			var name = (move||'').trim();
+			var name = (move || '').trim();
 			var id = toId(name);
 			if (this.data.Aliases[id]) {
 				name = this.data.Aliases[id];
 				id = toId(name);
 			}
 			move = {};
-			if (id.substr(0,11) === 'hiddenpower') {
+			if (id.substr(0, 11) === 'hiddenpower') {
 				var matches = /([a-z]*)([0-9]*)/.exec(id);
 				id = matches[1];
 			}
@@ -227,7 +256,7 @@ module.exports = (function () {
 			}
 			if (!move.id) move.id = id;
 			if (!move.name) move.name = name;
-			if (!move.fullname) move.fullname = 'move: '+move.name;
+			if (!move.fullname) move.fullname = 'move: ' + move.name;
 			move.toString = this.effectToString;
 			if (!move.critRatio) move.critRatio = 1;
 			if (!move.baseType) move.baseType = move.type;
@@ -258,16 +287,16 @@ module.exports = (function () {
 	 * @param  move    Move ID, move object, or movecopy object describing move to copy
 	 * @return         movecopy object
 	 */
-	Tools.prototype.getMoveCopy = function(move) {
+	Tools.prototype.getMoveCopy = function (move) {
 		if (move && move.isCopy) return move;
 		move = this.getMove(move);
 		var moveCopy = Object.clone(move, true);
 		moveCopy.isCopy = true;
 		return moveCopy;
 	};
-	Tools.prototype.getEffect = function(effect) {
+	Tools.prototype.getEffect = function (effect) {
 		if (!effect || typeof effect === 'string') {
-			var name = (effect||'').trim();
+			var name = (effect || '').trim();
 			var id = toId(name);
 			effect = {};
 			if (id && this.data.Statuses[id]) {
@@ -305,9 +334,9 @@ module.exports = (function () {
 		}
 		return effect;
 	};
-	Tools.prototype.getFormat = function(effect) {
+	Tools.prototype.getFormat = function (effect) {
 		if (!effect || typeof effect === 'string') {
-			var name = (effect||'').trim();
+			var name = (effect || '').trim();
 			var id = toId(name);
 			if (this.data.Aliases[id]) {
 				name = this.data.Aliases[id];
@@ -332,9 +361,9 @@ module.exports = (function () {
 		}
 		return effect;
 	};
-	Tools.prototype.getItem = function(item) {
+	Tools.prototype.getItem = function (item) {
 		if (!item || typeof item === 'string') {
-			var name = (item||'').trim();
+			var name = (item || '').trim();
 			var id = toId(name);
 			if (this.data.Aliases[id]) {
 				name = this.data.Aliases[id];
@@ -349,7 +378,7 @@ module.exports = (function () {
 			}
 			if (!item.id) item.id = id;
 			if (!item.name) item.name = name;
-			if (!item.fullname) item.fullname = 'item: '+item.name;
+			if (!item.fullname) item.fullname = 'item: ' + item.name;
 			item.toString = this.effectToString;
 			if (!item.category) item.category = 'Effect';
 			if (!item.effectType) item.effectType = 'Item';
@@ -364,9 +393,9 @@ module.exports = (function () {
 		}
 		return item;
 	};
-	Tools.prototype.getAbility = function(ability) {
+	Tools.prototype.getAbility = function (ability) {
 		if (!ability || typeof ability === 'string') {
-			var name = (ability||'').trim();
+			var name = (ability || '').trim();
 			var id = toId(name);
 			ability = {};
 			if (id && this.data.Abilities[id]) {
@@ -377,7 +406,7 @@ module.exports = (function () {
 			}
 			if (!ability.id) ability.id = id;
 			if (!ability.name) ability.name = name;
-			if (!ability.fullname) ability.fullname = 'ability: '+ability.name;
+			if (!ability.fullname) ability.fullname = 'ability: ' + ability.name;
 			ability.toString = this.effectToString;
 			if (!ability.category) ability.category = 'Effect';
 			if (!ability.effectType) ability.effectType = 'Ability';
@@ -391,10 +420,10 @@ module.exports = (function () {
 		}
 		return ability;
 	};
-	Tools.prototype.getType = function(type) {
+	Tools.prototype.getType = function (type) {
 		if (!type || typeof type === 'string') {
 			var id = toId(type);
-			id = id.substr(0,1).toUpperCase() + id.substr(1);
+			id = id.substr(0, 1).toUpperCase() + id.substr(1);
 			type = {};
 			if (id && this.data.TypeChart[id]) {
 				type = this.data.TypeChart[id];
@@ -412,50 +441,35 @@ module.exports = (function () {
 		}
 		return type;
 	};
-	var BattleNatures = {
-		Adamant: {plus:'atk', minus:'spa'},
-		Bashful: {},
-		Bold: {plus:'def', minus:'atk'},
-		Brave: {plus:'atk', minus:'spe'},
-		Calm: {plus:'spd', minus:'atk'},
-		Careful: {plus:'spd', minus:'spa'},
-		Docile: {},
-		Gentle: {plus:'spd', minus:'def'},
-		Hardy: {},
-		Hasty: {plus:'spe', minus:'def'},
-		Impish: {plus:'def', minus:'spa'},
-		Jolly: {plus:'spe', minus:'spa'},
-		Lax: {plus:'def', minus:'spd'},
-		Lonely: {plus:'atk', minus:'def'},
-		Mild: {plus:'spa', minus:'def'},
-		Modest: {plus:'spa', minus:'atk'},
-		Naive: {plus:'spe', minus:'spd'},
-		Naughty: {plus:'atk', minus:'spd'},
-		Quiet: {plus:'spa', minus:'spe'},
-		Quirky: {},
-		Rash: {plus:'spa', minus:'spd'},
-		Relaxed: {plus:'def', minus:'spe'},
-		Sassy: {plus:'spd', minus:'spe'},
-		Serious: {},
-		Timid: {plus:'spe', minus:'atk'}
-	};
-	Tools.prototype.getNature = function(nature) {
-		if (typeof nature === 'string') nature = BattleNatures[nature];
-		if (!nature) nature = {};
+	Tools.prototype.getNature = function (nature) {
+		if (!nature || typeof nature === 'string') {
+			var name = (nature || '').trim();
+			var id = toId(name);
+			nature = {};
+			if (id && this.data.Natures[id]) {
+				nature = this.data.Natures[id];
+				if (nature.cached) return nature;
+				nature.cached = true;
+				nature.exists = true;
+			}
+			if (!nature.id) nature.id = id;
+			if (!nature.name) nature.name = name;
+			nature.toString = this.effectToString;
+			if (!nature.effectType) nature.effectType = 'Nature';
+		}
 		return nature;
 	};
-	Tools.prototype.natureModify = function(stats, nature) {
-		if (typeof nature === 'string') nature = BattleNatures[nature];
-		if (!nature) return stats;
+	Tools.prototype.natureModify = function (stats, nature) {
+		nature = this.getNature(nature);
 		if (nature.plus) stats[nature.plus] *= 1.1;
 		if (nature.minus) stats[nature.minus] *= 0.9;
 		return stats;
 	};
 
-	Tools.prototype.getBanlistTable = function(format, subformat, depth) {
+	Tools.prototype.getBanlistTable = function (format, subformat, depth) {
 		var banlistTable;
 		if (!depth) depth = 0;
-		if (depth>8) return; // avoid infinite recursion
+		if (depth > 8) return; // avoid infinite recursion
 		if (format.banlistTable && !subformat) {
 			banlistTable = format.banlistTable;
 		} else {
@@ -466,7 +480,7 @@ module.exports = (function () {
 			banlistTable = format.banlistTable;
 			if (!subformat) subformat = format;
 			if (subformat.banlist) {
-				for (var i=0; i<subformat.banlist.length; i++) {
+				for (var i = 0; i < subformat.banlist.length; i++) {
 					// don't revalidate what we already validate
 					if (banlistTable[toId(subformat.banlist[i])]) continue;
 
@@ -479,13 +493,13 @@ module.exports = (function () {
 						var plusPlusPos = subformat.banlist[i].indexOf('++');
 						if (plusPlusPos && plusPlusPos > 0) {
 							complexList = subformat.banlist[i].split('++');
-							for (var j=0; j<complexList.length; j++) {
+							for (var j = 0; j < complexList.length; j++) {
 								complexList[j] = toId(complexList[j]);
 							}
 							format.teamBanTable.push(complexList);
 						} else {
 							complexList = subformat.banlist[i].split('+');
-							for (var j=0; j<complexList.length; j++) {
+							for (var j = 0; j < complexList.length; j++) {
 								complexList[j] = toId(complexList[j]);
 							}
 							format.setBanTable.push(complexList);
@@ -494,16 +508,16 @@ module.exports = (function () {
 				}
 			}
 			if (subformat.ruleset) {
-				for (var i=0; i<subformat.ruleset.length; i++) {
+				for (var i = 0; i < subformat.ruleset.length; i++) {
 					// don't revalidate what we already validate
-					if (banlistTable['Rule:'+toId(subformat.ruleset[i])]) continue;
+					if (banlistTable['Rule:' + toId(subformat.ruleset[i])]) continue;
 
-					banlistTable['Rule:'+toId(subformat.ruleset[i])] = subformat.ruleset[i];
+					banlistTable['Rule:' + toId(subformat.ruleset[i])] = subformat.ruleset[i];
 					if (format.ruleset.indexOf(subformat.ruleset[i]) === -1) format.ruleset.push(subformat.ruleset[i]);
 
 					var subsubformat = this.getFormat(subformat.ruleset[i]);
 					if (subsubformat.ruleset || subsubformat.banlist) {
-						this.getBanlistTable(format, subsubformat, depth+1);
+						this.getBanlistTable(format, subsubformat, depth + 1);
 					}
 				}
 			}
@@ -511,7 +525,7 @@ module.exports = (function () {
 		return banlistTable;
 	};
 
-	Tools.prototype.levenshtein = function(s, t, l) { // s = string 1, t = string 2, l = limit
+	Tools.prototype.levenshtein = function (s, t, l) { // s = string 1, t = string 2, l = limit
 		// Original levenshtein distance function by James Westgate, turned out to be the fastest
 		var d = []; // 2d matrix
 
@@ -519,8 +533,8 @@ module.exports = (function () {
 		var n = s.length;
 		var m = t.length;
 
-		if (n == 0) return m;
-		if (m == 0) return n;
+		if (n === 0) return m;
+		if (m === 0) return n;
 		if (l && Math.abs(m - n) > l) return Math.abs(m - n);
 
 		// Create an array of arrays in javascript (a descending loop is quicker)
@@ -537,10 +551,10 @@ module.exports = (function () {
 			// Step 4
 			for (var j = 1; j <= m; j++) {
 				// Check the jagged ld total so far
-				if (i == j && d[i][j] > 4) return n;
+				if (i === j && d[i][j] > 4) return n;
 
 				var t_j = t.charAt(j - 1);
-				var cost = (s_i == t_j) ? 0 : 1; // Step 5
+				var cost = (s_i === t_j) ? 0 : 1; // Step 5
 
 				// Calculate the minimum
 				var mi = d[i - 1][j] + 1;
@@ -557,6 +571,7 @@ module.exports = (function () {
 		// Step 7
 		return d[n][m];
 	};
+
 	Tools.prototype.clampIntRange = function (num, min, max) {
 		if (typeof num !== 'number') num = 0;
 		num = Math.floor(num);
@@ -575,18 +590,16 @@ module.exports = (function () {
 			return false;
 		}
 
-		searchIn = searchIn || ['Pokedex', 'Movedex', 'Abilities', 'Items'];
+		searchIn = searchIn || ['Pokedex', 'Movedex', 'Abilities', 'Items', 'Natures'];
 
-		var searchFunctions = { Pokedex: 'getTemplate', Movedex: 'getMove', Abilities: 'getAbility', Items: 'getItem' };
-		var searchTypes = { Pokedex: 'pokemon', Movedex: 'move', Abilities: 'ability', Items: 'item' };
+		var searchFunctions = {Pokedex: 'getTemplate', Movedex: 'getMove', Abilities: 'getAbility', Items: 'getItem', Natures: 'getNature'};
+		var searchTypes = {Pokedex: 'pokemon', Movedex: 'move', Abilities: 'ability', Items: 'item', Natures: 'nature'};
 		var searchResults = [];
 		for (var i = 0; i < searchIn.length; i++) {
-			if (typeof this[searchFunctions[searchIn[i]]] === "function") {
-				var res = this[searchFunctions[searchIn[i]]](target);
-				if (res.exists) {
-					res.searchType = searchTypes[searchIn[i]];
-					searchResults.push(res);
-				}
+			var res = this[searchFunctions[searchIn[i]]](target);
+			if (res.exists) {
+				res.searchType = searchTypes[searchIn[i]];
+				searchResults.push(res);
 			}
 		}
 		if (searchResults.length) {
@@ -643,12 +656,12 @@ module.exports = (function () {
 		return false;
 	};
 
-	Tools.prototype.packTeam = function(team) {
+	Tools.prototype.packTeam = function (team) {
 		if (!team) return '';
 
 		var buf = '';
 
-		for (var i=0; i<team.length; i++) {
+		for (var i = 0; i < team.length; i++) {
 			var set = team[i];
 			if (buf) buf += ']';
 
@@ -667,7 +680,7 @@ module.exports = (function () {
 			var abilities = template.abilities;
 			id = toId(set.ability);
 			if (abilities) {
-				if (id == toId(abilities['0'])) {
+				if (id === toId(abilities['0'])) {
 					buf += '|';
 				} else if (id === toId(abilities['1'])) {
 					buf += '|1';
@@ -689,7 +702,7 @@ module.exports = (function () {
 			// evs
 			var evs = '|';
 			if (set.evs) {
-				evs = '|' + (set.evs['hp']||'') + ',' + (set.evs['atk']||'') + ',' + (set.evs['def']||'') + ',' + (set.evs['spa']||'') + ',' + (set.evs['spd']||'') + ',' + (set.evs['spe']||'');
+				evs = '|' + (set.evs['hp'] || '') + ',' + (set.evs['atk'] || '') + ',' + (set.evs['def'] || '') + ',' + (set.evs['spa'] || '') + ',' + (set.evs['spd'] || '') + ',' + (set.evs['spe'] || '');
 			}
 			if (evs === '|,,,,,') {
 				buf += '|';
@@ -699,15 +712,15 @@ module.exports = (function () {
 
 			// gender
 			if (set.gender && set.gender !== template.gender) {
-				buf += '|'+set.gender;
+				buf += '|' + set.gender;
 			} else {
-				buf += '|'
+				buf += '|';
 			}
 
 			// ivs
 			var ivs = '|';
 			if (set.ivs) {
-				ivs = '|' + (set.ivs['hp']===31||set.ivs['hp']===undefined ? '' : set.ivs['hp']) + ',' + (set.ivs['atk']===31||set.ivs['atk']===undefined ? '' : set.ivs['atk']) + ',' + (set.ivs['def']===31||set.ivs['def']===undefined ? '' : set.ivs['def']) + ',' + (set.ivs['spa']===31||set.ivs['spa']===undefined ? '' : set.ivs['spa']) + ',' + (set.ivs['spd']===31||set.ivs['spd']===undefined ? '' : set.ivs['spd']) + ',' + (set.ivs['spe']===31||set.ivs['spe']===undefined ? '' : set.ivs['spe']);
+				ivs = '|' + (set.ivs['hp'] === 31 || set.ivs['hp'] === undefined ? '' : set.ivs['hp']) + ',' + (set.ivs['atk'] === 31 || set.ivs['atk'] === undefined ? '' : set.ivs['atk']) + ',' + (set.ivs['def'] === 31 || set.ivs['def'] === undefined ? '' : set.ivs['def']) + ',' + (set.ivs['spa'] === 31 || set.ivs['spa'] === undefined ? '' : set.ivs['spa']) + ',' + (set.ivs['spd'] === 31 || set.ivs['spd'] === undefined ? '' : set.ivs['spd']) + ',' + (set.ivs['spe'] === 31 || set.ivs['spe'] === undefined ? '' : set.ivs['spe']);
 			}
 			if (ivs === '|,,,,,') {
 				buf += '|';
@@ -719,19 +732,19 @@ module.exports = (function () {
 			if (set.shiny) {
 				buf += '|S';
 			} else {
-				buf += '|'
+				buf += '|';
 			}
 
 			// level
 			if (set.level && set.level != 100) {
-				buf += '|'+set.level;
+				buf += '|' + set.level;
 			} else {
-				buf += '|'
+				buf += '|';
 			}
 
 			// happiness
 			if (set.happiness !== undefined && set.happiness !== 255) {
-				buf += '|'+set.happiness;
+				buf += '|' + set.happiness;
 			} else {
 				buf += '|';
 			}
@@ -740,14 +753,14 @@ module.exports = (function () {
 		return buf;
 	};
 
-	Tools.prototype.fastUnpackTeam = function(buf) {
+	Tools.prototype.fastUnpackTeam = function (buf) {
 		if (!buf) return null;
 
 		var team = [];
 		var i = 0, j = 0;
 
 		// limit to 24
-		for (var count=0; count<24; count++) {
+		for (var count = 0; count < 24; count++) {
 			var set = {};
 			team.push(set);
 
@@ -755,39 +768,39 @@ module.exports = (function () {
 			j = buf.indexOf('|', i);
 			if (j < 0) return;
 			set.name = buf.substring(i, j);
-			i = j+1;
+			i = j + 1;
 
 			// species
 			j = buf.indexOf('|', i);
 			if (j < 0) return;
 			set.species = buf.substring(i, j) || set.name;
-			i = j+1;
+			i = j + 1;
 
 			// item
 			j = buf.indexOf('|', i);
 			if (j < 0) return;
 			set.item = buf.substring(i, j);
-			i = j+1;
+			i = j + 1;
 
 			// ability
 			j = buf.indexOf('|', i);
 			if (j < 0) return;
 			var ability = buf.substring(i, j);
 			var template = moddedTools.base.getTemplate(set.species);
-			set.ability = (template.abilities && ability in {'':1, 0:1, 1:1, H:1} ? template.abilities[ability||'0'] : ability);
-			i = j+1;
+			set.ability = (template.abilities && ability in {'':1, 0:1, 1:1, H:1} ? template.abilities[ability || '0'] : ability);
+			i = j + 1;
 
 			// moves
 			j = buf.indexOf('|', i);
 			if (j < 0) return;
 			set.moves = buf.substring(i, j).split(',');
-			i = j+1;
+			i = j + 1;
 
 			// nature
 			j = buf.indexOf('|', i);
 			if (j < 0) return;
 			set.nature = buf.substring(i, j);
-			i = j+1;
+			i = j + 1;
 
 			// evs
 			j = buf.indexOf('|', i);
@@ -795,21 +808,21 @@ module.exports = (function () {
 			if (j !== i) {
 				var evs = buf.substring(i, j).split(',');
 				set.evs = {
-					hp: Number(evs[0])||0,
-					atk: Number(evs[1])||0,
-					def: Number(evs[2])||0,
-					spa: Number(evs[3])||0,
-					spd: Number(evs[4])||0,
-					spe: Number(evs[5])||0
+					hp: Number(evs[0]) || 0,
+					atk: Number(evs[1]) || 0,
+					def: Number(evs[2]) || 0,
+					spa: Number(evs[3]) || 0,
+					spd: Number(evs[4]) || 0,
+					spe: Number(evs[5]) || 0
 				};
 			}
-			i = j+1;
+			i = j + 1;
 
 			// gender
 			j = buf.indexOf('|', i);
 			if (j < 0) return;
 			if (i !== j) set.gender = buf.substring(i, j);
-			i = j+1;
+			i = j + 1;
 
 			// ivs
 			j = buf.indexOf('|', i);
@@ -817,27 +830,27 @@ module.exports = (function () {
 			if (j !== i) {
 				var ivs = buf.substring(i, j).split(',');
 				set.ivs = {
-					hp: ivs[0]==='' ? 31 : Number(ivs[0]) || 0,
-					atk: ivs[1]==='' ? 31 : Number(ivs[1]) || 0,
-					def: ivs[2]==='' ? 31 : Number(ivs[2]) || 0,
-					spa: ivs[3]==='' ? 31 : Number(ivs[3]) || 0,
-					spd: ivs[4]==='' ? 31 : Number(ivs[4]) || 0,
-					spe: ivs[5]==='' ? 31 : Number(ivs[5]) || 0
+					hp: ivs[0] === '' ? 31 : Number(ivs[0]) || 0,
+					atk: ivs[1] === '' ? 31 : Number(ivs[1]) || 0,
+					def: ivs[2] === '' ? 31 : Number(ivs[2]) || 0,
+					spa: ivs[3] === '' ? 31 : Number(ivs[3]) || 0,
+					spd: ivs[4] === '' ? 31 : Number(ivs[4]) || 0,
+					spe: ivs[5] === '' ? 31 : Number(ivs[5]) || 0
 				};
 			}
-			i = j+1;
+			i = j + 1;
 
 			// shiny
 			j = buf.indexOf('|', i);
 			if (j < 0) return;
 			if (i !== j) set.shiny = true;
-			i = j+1;
+			i = j + 1;
 
 			// level
 			j = buf.indexOf('|', i);
 			if (j < 0) return;
 			if (i !== j) set.level = parseInt(buf.substring(i, j), 10);
-			i = j+1;
+			i = j + 1;
 
 			// happiness
 			j = buf.indexOf(']', i);
@@ -848,7 +861,7 @@ module.exports = (function () {
 				break;
 			}
 			if (i !== j) set.happiness = Number(buf.substring(i, j));
-			i = j+1;
+			i = j + 1;
 		}
 
 		return team;
@@ -857,13 +870,13 @@ module.exports = (function () {
 	/**
 	 * Install our Tools functions into the battle object
 	 */
-	Tools.prototype.install = function(battle) {
+	Tools.prototype.install = function (battle) {
 		for (var i in this.data.Scripts) {
 			battle[i] = this.data.Scripts[i];
 		}
 	};
 
-	Tools.construct = function(mod, parentMod) {
+	Tools.construct = function (mod, parentMod) {
 		var tools = new Tools(mod, parentMod);
 		// Scripts override Tools.
 		var ret = Object.create(tools);
@@ -889,9 +902,9 @@ module.exports = (function () {
 	try {
 		var mods = fs.readdirSync('./mods/');
 
-		mods.forEach(function(mod) {
-			if (fs.existsSync('./mods/'+mod+'/scripts.js')) {
-				parentMods[mod] = require('./mods/'+mod+'/scripts.js').BattleScripts.inherit || 'base';
+		mods.forEach(function (mod) {
+			if (fs.existsSync('./mods/' + mod + '/scripts.js')) {
+				parentMods[mod] = require('./mods/' + mod + '/scripts.js').BattleScripts.inherit || 'base';
 			} else {
 				parentMods[mod] = 'base';
 			}
@@ -908,7 +921,7 @@ module.exports = (function () {
 			}
 		} while (didSomething);
 	} catch (e) {
-		console.log("Error while loading mods: "+e);
+		console.log("Error while loading mods: " + e);
 	}
 
 	moddedTools.base.__proto__.moddedTools = moddedTools;

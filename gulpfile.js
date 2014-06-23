@@ -16,14 +16,11 @@ var gulp = require('gulp'),
 		"eqeqeq": false,
 
 		"globals": {
-			"fs": false,
 			"Config": false,
 			"ResourceMonitor": false,
 			"toId": false,
-			"toUserid": false,
 			"toName": false,
 			"string": false,
-			"clampIntRange": false,
 			"LoginServer": false,
 			"Users": false,
 			"Rooms": false,
@@ -39,7 +36,7 @@ var gulp = require('gulp'),
 		}
 	};
 
-gulp.task('lint', function() {
+gulp.task('lint', function () {
 	var directories = ['./*.js', './data/*.js', './mods/*.js', './config/*.js'];
 	console.log("\n\n*** Linting JavaScript Files ***\n\n");
 

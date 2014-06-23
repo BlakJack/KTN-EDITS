@@ -26,7 +26,7 @@ exports.Formats = [
 		name: "OU",
 		section: "XY Singles",
 
-		ruleset: ['Pokemon', 'Standard', 'Team Preview'],
+		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Baton Pass Clause'],
 		banlist: ['Uber', 'Soul Dew', 'Gengarite', 'Kangaskhanite', 'Lucarionite', 'Swagger']
 	},
 	{
@@ -41,7 +41,7 @@ exports.Formats = [
 		section: "XY Singles",
 
 		ruleset: ['OU'],
-		banlist: ['OU', 'BL', 'Heracronite', 'Medichamite', 'Gardevoirite', 'Drizzle', 'Drought']
+		banlist: ['OU', 'BL', 'Heracronite', 'Medichamite', 'Gardevoirite', 'Drizzle', 'Drought', 'Alakazite']
 	},
 	{
 		name: "RU",
@@ -250,59 +250,6 @@ exports.Formats = [
 		debug: true,
 		ruleset: ['Team Preview']
 	},
-	
-	// Monotype
-	///////////////////////////////////////////////////////////////////
-	{
-		name: "Random Monotype",
-		section: "Monotype",
-		column: 2,
-
-		team: 'randommonotype',
-		ruleset: ['Pokemon', 'Sleep Clause Mod', 'HP Percentage Mod']
-	},
-	{
-		name: "OU Monotype",
-		section: "Monotype",
-		ruleset: ['OU', 'Same Type Clause'],
-		banlist: ['Talonflame']
-	},
-	{
-		name: "Ubers Monotype",
-		section: "Monotype",
-
-		ruleset: ['Pokemon', 'Standard Ubers', 'Same Type Clause'],
-		banlist: []
-	},
-	{
-		name: "UU Monotype",
-		section: "Monotype",
-
-		ruleset: ['OU', 'Same Type Clause'],
-		banlist: ['OU', 'BL', 'Heracronite', 'Medichamite', 'Gardevoirite', 'Drizzle', 'Drought']
-	},
-	{
-		name: "RU Monotype",
-		section: "Monotype",
-
-		ruleset: ['UU', 'Same Type Clause'],
-		banlist: ['UU', 'BL2']
-	},
-	{
-		name: "NU Monotype",
-		section: "Monotype",
-
-		ruleset: ['RU (beta)', 'Same Type Clause'],
-		banlist: ['RU', 'BL3']
-	},
-	{
-		name: "LC Monotype",
-		section: "Monotype",
-
-		maxLevel: 5,
-		ruleset: ['Pokemon', 'Standard', 'Little Cup', 'Same Type Clause'],
-		banlist: ['Dragon Rage', 'Sonic Boom', 'Swagger', 'LC Uber', 'Gligar']
-	},
 
 	// Other Metagames
 	///////////////////////////////////////////////////////////////////
@@ -312,7 +259,7 @@ exports.Formats = [
 		section: "OM of the Month",
 
 		ruleset: ['OU'],
-		banlist: ['Sylveon']
+		banlist: ['Porygon-Z', 'Sylveon']
 	},
 	{
 		name: "OU Theorymon",
@@ -416,6 +363,13 @@ exports.Formats = [
 			'Arceus', 'Darkrai', 'Deoxys-Attack', 'Giratina', 'Giratina-Origin', 'Groudon', 'Ho-Oh', 'Kyogre', 'Kyurem-Black', 'Lugia',
 			'Mewtwo', 'Palkia', 'Rayquaza', 'Reshiram', 'Shaymin-Sky', 'Kyurem-White', 'Xerneas', 'Yveltal', 'Zekrom'
 		]
+	},
+	{
+		name: "OU Monotype",
+		section: "Other Metagames",
+
+		ruleset: ['OU', 'Same Type Clause'],
+		banlist: ['Talonflame']
 	},
 	{
 		name: "Tier Shift",

@@ -10,7 +10,7 @@
  */
 
 var config = {
-    name: 'KTN Bot',
+    name: 'Booty-Bot',
     userid: function () {
         return toId(this.name);
     },
@@ -27,7 +27,8 @@ var config = {
     privaterooms: ['staff'],
     hosting: {},
     laddering: true,
-    ladderPercentage: 70
+    ladderPercentage: 70,
+    debug: false
 };
 
 /**
@@ -196,7 +197,7 @@ var parse = {
     },
 
     processBotCommands: function (user, room, connection, message) {
-        if (room.type !== 'chat') return;
+        if (room.type !== 'chat' || message.charAt(0) !== '.') return;
 
         var cmd = '',
             target = '',
@@ -213,7 +214,7 @@ var parse = {
         }
         cmd = cmd.toLowerCase();
 
-        if (message.charAt(0) === '.' && Object.keys(Bot.commands).join(' ').toString().indexOf(cmd) >= 0 && message.substr(1) !== '') {
+        if ((message.charAt(0) === '.' && Object.keys(Bot.commands).join(' ').toString().indexOf(cmd) >= 0 && message.substr(1) !== '') && !Bot.config.debug) {
 
             if ((now - user.lastBotCmd) * 0.001 < 30) {
                 connection.sendTo(room, 'Please wait ' + Math.floor((30 - (now - user.lastBotCmd) * 0.001)) + ' seconds until the next command.');
@@ -295,7 +296,7 @@ var commands = {
         this.sendReply(target);
     },
 
-    bottell: function (target, room, user) {
+    tell: function (target, room, user) {
         if (!this.can('bottell')) return;
         var parts = target.split(',');
         if (parts.length < 2) return;
@@ -350,6 +351,8 @@ var commands = {
             if (target === 'creaturephil') message = 'An experienced **coder** for pokemon showdown. He has coded for over 5 servers such as kill the noise, moxie, aerdeith, nova, etc. Please follow him on github: https://github.com/CreaturePhil';
             if (target === config.userid()) message = 'That\'s me.';
             if (target === 'zarel') message = 'Pokemon Showdown Creator';
+            if (target === 'stevoduhhero') message = 'STEVO DUH GOD DAMN HERO! Respect him!';
+            if (target === 'rickycocaine') message = 'RICKY COCAAAAAAAINE﻿';
 
             this.sendReply(message);
         };
@@ -500,6 +503,27 @@ var commands = {
         setTimeout(function() {
             connection.sendTo(room, Bot.config.name + ' has left ' +  target + ' room.');
         }, botDelay);
+    },
+
+    rps: function (target, room, user) {
+        if (!target) return;
+        var options = ['rock', 'paper', 'scissors'],
+            rng = options[Math.floor(Math.random() * options.length)],
+            target = toId(target);
+
+        if (rng === target) return this.sendReply('I chose ' + rng + '. The result is a tie!');
+        if (rng === options[0]) {
+            if (target === options[1]) return this.sendReply('I chose ' + rng + '. ' + user.name + ' wins!');
+            if (target === options[2]) return this.sendReply('I chose ' + rng + '. I win and ' + user.name + ' loses!');
+        }
+        if (rng === options[1]) {
+            if (target === options[2]) return this.sendReply('I chose ' + rng + '. ' + user.name + ' wins!');
+            if (target === options[0]) return this.sendReply('I chose ' + rng + '. I win and ' + user.name + ' loses!');
+        }
+        if (rng === options[2]) {
+            if (target === options[0]) return this.sendReply('I chose ' + rng + '. ' + user.name + ' wins!');
+            if (target === options[1]) return this.sendReply('I chose ' + rng + '. I win and ' + user.name + ' loses!');
+        }
     },
 
 };

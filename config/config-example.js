@@ -4,7 +4,7 @@ exports.port = 8000;
 // The server id - the id specified in the server registration.
 //   This should be set properly especially when there are more than one
 //   pokemon showdown server running from the same IP
-exports.serverId = 'killthenoise';
+exports.serverId = 'example';
 
 // proxyIps - proxy IPs with trusted X-Forwarded-For headers
 //   This can be either false (meaning not to trust any proxies) or an array
@@ -113,7 +113,7 @@ exports.logChat = false;
 
 // logUserStats - how often (in milliseconds) to write user stats to the
 // lobby log. This has no effect if `logchat` is disabled.
-exports.logUserStats = 1000*60*10; // 10 minutes
+exports.logUserStats = 1000 * 60 * 10; // 10 minutes
 
 // validatorProcesses - the number of processes to use for validating teams
 // simulatorProcesses - the number of processes to use for handling battles
@@ -124,7 +124,7 @@ exports.simulatorProcesses = 1;
 
 // inactiveUserThreshold - how long a user must be inactive before being pruned
 // from the `users` array. The default is 1 hour.
-exports.inactiveUserThreshold = 1000*60*60;
+exports.inactiveUserThreshold = 1000 * 60 * 60;
 
 // Set this to true if you are using Pokemon Showdown on Heroku.
 exports.herokuHack = false;
@@ -139,7 +139,6 @@ exports.herokuHack = false;
 // displayed in the client.
 exports.customAvatars = {
 	//'userid': 'customavatar.png'
-	
 };
 
 // appealUri - specify a URI containing information on how users can appeal
@@ -250,11 +249,10 @@ exports.groups = {
 			potd: true,
 			promote: 'u',
 			rangeban: true
-			modlog: true,
 		},
 		'#': {
 			id: 'owner',
-			name: "Owner",
+			name: "Room Owner",
 			description: "They are administrators of the room and can almost totally control it",
 			inherit: '@',
 			jurisdiction: 'u',
@@ -311,8 +309,7 @@ exports.groups = {
 			description: "They can use ! commands like !groups, and talk during moderated chat",
 			inherit: ' ',
 			broadcast: true,
-			joinbattle: true,
-			tournaments: true
+			joinbattle: true
 		},
 		' ': {
 			alts: 's',
