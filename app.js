@@ -92,7 +92,6 @@ if (!fs.existsSync('./config/config.js')) {
 
 global.Config = require('./config/config.js');
 
-<<<<<<< HEAD
 try {
 	global.reloadCustomAvatars = function () {
 	    var path = require('path');
@@ -121,32 +120,6 @@ try {
 	}
 } catch (e) {
 	console.log('Custom avatar failed to load. Try this:\nIn config.js on line 140, change customavatar to customAvatar.');
-=======
-global.reloadCustomAvatars = function () {
-	var path = require('path');
-	var newCustomAvatars = {};
-	fs.readdirSync('./config/avatars').forEach(function (file) {
-		var ext = path.extname(file);
-		if (ext !== '.png' && ext !== '.gif')
-			return;
-
-		var user = toId(path.basename(file, ext));
-		newCustomAvatars[user] = file;
-		delete Config.customAvatars[user];
-	});
-
-	// Make sure the manually entered avatars exist
-	for (var a in Config.customAvatars)
-		if (typeof Config.customAvatars[a] === 'number')
-			newCustomAvatars[a] = Config.customAvatars[a];
-		else
-			fs.exists('./config/avatars/' + Config.customAvatars[a], (function (user, file, isExists) {
-				if (isExists)
-					Config.customAvatars[user] = file;
-			}).bind(null, a, Config.customAvatars[a]));
-
-	Config.customAvatars = newCustomAvatars;
->>>>>>> upstream/master
 }
 
 var watchFile = function () {
@@ -474,14 +447,10 @@ fs.readFile('./config/ipbans.txt', function (err, data) {
 	Users.checkRangeBanned = Cidr.checker(rangebans);
 });
 
-<<<<<<< HEAD
-// uptime recording
-=======
 reloadCustomAvatars();
 
 global.Spamroom = require('./spamroom.js');
 
->>>>>>> upstream/master
 fs.readFile('./logs/uptime.txt', function (err, uptime) {
 	if (!err) global.uptimeRecord = parseInt(uptime, 10);
 	global.uptimeRecordInterval = setInterval(function () {
@@ -490,10 +459,6 @@ fs.readFile('./logs/uptime.txt', function (err, uptime) {
 		fs.writeFile('./logs/uptime.txt', global.uptimeRecord.toFixed(0));
 	}, (1).hour());
 });
-<<<<<<< HEAD
-
-// reload custom avatars
-reloadCustomAvatars();
 
 /*********************************************************
  * Load custom files
@@ -506,5 +471,5 @@ global.Components = require('./components.js');
 global.Poll = require('./core.js').core.poll();
 
 global.SysopAccess = require('./core.js').sysopAccess();
-=======
->>>>>>> upstream/master
+
+global.trainerCards = require('./trainer-cards.js');
