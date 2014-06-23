@@ -1341,11 +1341,7 @@ var ChatRoom = (function () {
 	ChatRoom.prototype.sendAuth = function (message) {
 		for (var i in this.users) {
 			var user = this.users[i];
-<<<<<<< HEAD
-			if (user.connected && user.can('receiveauthmessages', null, this)) {
-=======
 			if (user.connected && user.can('staff', this)) {
->>>>>>> upstream/master
 				user.sendTo(this, message);
 			}
 		}
@@ -1414,14 +1410,8 @@ var ChatRoom = (function () {
 		this.send('|init|chat\n|title|' + this.title + '\n' + userList + '\n' + this.logGetLast(25).join('\n') + modchat, connection);
 		if (global.Tournaments && Tournaments.get(this.id))
 			Tournaments.get(this.id).update(user);
-<<<<<<< HEAD
 		if (this.welcome && this.welcome.length > 0)
 			CommandParser.parse('/welcomemessage', this, user, connection);
-=======
-		if (this.reminders && this.reminders.length > 0)
-			CommandParser.parse('/reminder', this, user, connection);
-		CommandParser.parse('/donate', this, user, connection);
->>>>>>> upstream/master
 	};
 	ChatRoom.prototype.onJoin = function (user, connection, merging) {
 		if (!user) return false; // ???
@@ -1445,14 +1435,8 @@ var ChatRoom = (function () {
 			var userList = this.userList ? this.userList : this.getUserList();
 			var modchat = this.getModchatNote();
 			this.send('|init|chat\n|title|' + this.title + '\n' + userList + '\n' + this.logGetLast(100).join('\n') + modchat, connection);
-<<<<<<< HEAD
 			if (this.welcome && this.welcome.length > 0)
 				CommandParser.parse('/welcomemessage', this, user, connection);
-=======
-			if (this.reminders && this.reminders.length > 0)
-				CommandParser.parse('/reminder', this, user, connection);
-			CommandParser.parse('/donate', this, user, connection);
->>>>>>> upstream/master
 		}
 		if (global.Tournaments && Tournaments.get(this.id))
 			Tournaments.get(this.id).update(user);

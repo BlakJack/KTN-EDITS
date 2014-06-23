@@ -16,7 +16,7 @@ var path = require("path");
 var core = exports.core = {
 
     stdin: function (file, name) {
-        var data = fs.readFileSync('config/' + file + '.csv', 'utf8').split('\n');
+        var data = fs.readFileSync('config/db/' + file + '.csv', 'utf8').split('\n');
 
         var len = data.length;
         while (len--) {
@@ -30,7 +30,7 @@ var core = exports.core = {
     },
 
     stdout: function (file, name, info, callback) {
-        var data = fs.readFileSync('config/' + file + '.csv', 'utf8').split('\n');
+        var data = fs.readFileSync('config/db/' + file + '.csv', 'utf8').split('\n');
         var match = false;
 
         var len = data.length;
