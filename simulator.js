@@ -31,7 +31,7 @@ var SimulatorProcess = (function () {
 	SimulatorProcess.prototype.active = true;
 	SimulatorProcess.processes = [];
 	SimulatorProcess.spawn = function (num) {
-		/*if (!num) num = Config.simulatorprocesses || 1;
+		/*if (!num) num = Config.simulatorProcesses || 1;
 		for (var i = this.processes.length; i < num; ++i) {
 			this.processes.push(new SimulatorProcess());
 		}*/
@@ -68,7 +68,7 @@ var SimulatorProcess = (function () {
 })();
 
 // Create the initial set of simulator processes.
-// SimulatorProcess.spawn();
+//SimulatorProcess.spawn();
 SimulatorProcess.processes.push(new SimulatorProcess());
 
 var slice = Array.prototype.slice;

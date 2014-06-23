@@ -38,7 +38,7 @@ var plugins = exports.plugins = {
 			startofficialhunt: 'starthunt',
 			starthunt: function (target, room, user, connection, cmd) {
 				if (room.id !== 'scavengers') return;
-				if (!this.can('mute', null, room)) return false;
+				if (!this.can('scavengers', room)) return false;
 				if (plugins.scavengers.status === 'on') return this.sendReply('There is already an active scavenger hunt.');
 				var targets = target.split(',');
 				if (!targets[0] || !targets[1] || !targets[2] || !targets[3] || !targets[4] || !targets[5] || targets[6]) {
@@ -46,7 +46,7 @@ var plugins = exports.plugins = {
 				}
 				plugins.scavengers.status = 'on';
 				if (cmd === 'startofficialhunt') {
-					if (!this.can('ban', null, room)) return false;
+					if (!this.can('officialscavengers', room)) return false;
 					plugins.scavengers.blitz = setTimeout(function () {
 						plugins.scavengers.blitz = null;
 					}, 60000);
@@ -104,7 +104,7 @@ var plugins = exports.plugins = {
 			},
 			endhunt: function (target, room, user) {
 				if (room.id !== 'scavengers') return;
-				if (!this.can('mute', null, room)) return false;
+				if (!this.can('scavengers', room)) return false;
 				if (plugins.scavengers.status !== 'on') return this.sendReply('There is no active scavenger hunt.');
 				var winner = plugins.scavengers.finished[0];
 				var second = plugins.scavengers.finished[1];
@@ -125,7 +125,7 @@ var plugins = exports.plugins = {
 			},
 			resethunt: function (target, room, user) {
 				if (room.id !== 'scavengers') return;
-				if (!this.can('mute', null, room)) return false;
+				if (!this.can('scavengers', room)) return false;
 				if (plugins.scavengers.status !== 'on') return this.sendReply('There is no active scavenger hunt.');
 				plugins.scavengers.status = 'off';
 				if (plugins.scavengers.blitz) clearTimeout(plugins.scavengers.blitz);

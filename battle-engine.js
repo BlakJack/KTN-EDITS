@@ -14,6 +14,11 @@ require('sugar');
 
 global.Config = require('./config/config.js');
 
+// graceful crash - allow current battles to finish before restarting
+/*process.on('uncaughtException', function (err) {
+	require('./crashlogger.js')(err, 'A simulator process');
+});*/
+
 /**
  * Converts anything to an ID. An ID must have only lowercase alphanumeric
  * characters.

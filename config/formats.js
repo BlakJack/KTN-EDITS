@@ -269,6 +269,13 @@ exports.Formats = [
 		ruleset: ['OU']
 	},
 	{
+		name: "Stat Reversal",
+		section: "Other Metagames",
+
+		mod: 'statreversal',
+		ruleset: ['OU'],
+	},
+	{
 		name: "CAP",
 		section: "Other Metagames",
 

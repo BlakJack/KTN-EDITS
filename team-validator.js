@@ -34,7 +34,7 @@
 		ValidatorProcess.prototype.active = true;
 		ValidatorProcess.processes = [];
 		ValidatorProcess.spawn = function () {
-			var num = Config.validatorprocesses || 1;
+			var num = Config.validatorProcesses || 1;
 			for (var i = 0; i < num; ++i) {
 				this.processes.push(new ValidatorProcess());
 			}
@@ -109,10 +109,9 @@
 	require('sugar');
 	global.Config = require('./config/config.js');
 
-	if (Config.crashguard) {
-		process.on('uncaughtException', function (err) {
-			require('./crashlogger.js')(err, 'A team validator process');
-		});*/
+	process.on('uncaughtException', function (err) {
+		require('./crashlogger.js')(err, 'A team validator process');
+	});*/
 
 	/**
 	 * Converts anything to an ID. An ID must have only lowercase alphanumeric
@@ -140,8 +139,8 @@
 			name = name.substr(1);
 		}
 		if (name.length > 18) name = name.substr(0, 18);
-		if (Config.namefilter) {
-			name = Config.namefilter(name);
+		if (Config.nameFilter) {
+			name = Config.nameFilter(name);
 		}
 		return name.trim();
 	};*/
@@ -430,7 +429,7 @@ var Validator = (function () {
 					clause = typeof banlistTable[check] === 'string' ? " by "+ banlistTable[check] : '';
 					problems.push(name + "'s move " + set.moves[i] + " is banned" + clause + ".");
 				}
-				
+
 				if (banlistTable['Unreleased']) {
 					if (move.isUnreleased) problems.push(name + "'s move " + set.moves[i] + " is unreleased.");
 				}
